@@ -7,42 +7,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 public class EmployeeDAO {
     private static final EntityManager em = EmUtil.getEntityManager();
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/";
-    private static final String DB_NAME = "employees";
-    private static final String USER = "your_user";
-    private static final String PASSWORD = "your_password";
-
-    public static void createDatabase() {
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-             Statement stmt = conn.createStatement()) {
-
-            String sql = "SELECT datname FROM pg_database WHERE datname = '" + DB_NAME + "'";
-            var rs = stmt.executeQuery(sql);
-
-            if (!rs.next()) { // База не найдена - создаем
-                stmt.executeUpdate("CREATE DATABASE " + DB_NAME);
-                System.out.println("Database '" + DB_NAME + "' created successfully.");
-            } else {
-                System.out.println("Database '" + DB_NAME + "' already exists.");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static boolean isTableExists() {
         EntityManager em = EmUtil.getEntityManager();
         try {
-            String sql = "SELECT to_regclass('public.employees')";
+            String sql = "SELECT to_regclass('public.employee')";
             Query query = em.createNativeQuery(sql);
             Object result = query.getSingleResult();
             return result != null;
@@ -58,7 +31,7 @@ public class EmployeeDAO {
             em.getTransaction().begin();
 
             String sql = """
-                CREATE TABLE IF NOT EXISTS employees (
+                CREATE TABLE IF NOT EXISTS employee (
                     id SERIAL PRIMARY KEY,
                     full_name VARCHAR(100) NOT NULL,
                     birth_date DATE NOT NULL,
@@ -70,7 +43,7 @@ public class EmployeeDAO {
             query.executeUpdate();
 
             em.getTransaction().commit();
-            System.out.println("Table 'employees' created successfully.");
+            System.out.println("Table 'employee' created successfully.");
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -89,16 +62,16 @@ public class EmployeeDAO {
         try {
             em.getTransaction().begin();
 
-            String indexLastName = "CREATE INDEX IF NOT EXISTS idx_last_name ON employees (last_name)";
+            String indexLastName = "CREATE INDEX IF NOT EXISTS idx_last_name ON employee (last_name)";
             em.createNativeQuery(indexLastName).executeUpdate();
 
-            String indexFirstName = "CREATE INDEX IF NOT EXISTS idx_first_name ON employees (first_name)";
+            String indexFirstName = "CREATE INDEX IF NOT EXISTS idx_first_name ON employee (first_name)";
             em.createNativeQuery(indexFirstName).executeUpdate();
 
-            String indexGender = "CREATE INDEX IF NOT EXISTS idx_gender ON employees (gender)";
+            String indexGender = "CREATE INDEX IF NOT EXISTS idx_gender ON employee (gender)";
             em.createNativeQuery(indexGender).executeUpdate();
 
-            String indexGenderLastName = "CREATE INDEX IF NOT EXISTS idx_gender_last_name ON employees (gender, last_name)";
+            String indexGenderLastName = "CREATE INDEX IF NOT EXISTS idx_gender_last_name ON employee (gender, last_name)";
             em.createNativeQuery(indexGenderLastName).executeUpdate();
 
             em.getTransaction().commit();
@@ -182,9 +155,11 @@ public class EmployeeDAO {
                 em.persist(employees.get(i));
 
                 if (i % 1000 == 0) {
+
                     em.flush();
                     em.clear();
                 }
+                System.out.println(i + " / " + employees.size());
             }
             transaction.commit();
         } catch (Exception e) {

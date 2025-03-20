@@ -50,6 +50,7 @@ public class EmployeeController {
             for (Employee employee : employees) {
                 System.out.println(employee.toString());
             }
+            System.out.println("Employees in DB: " + employees.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,13 +75,13 @@ public class EmployeeController {
             for (Employee employee : res) {
                 System.out.println(employee.toString());
             }
-            System.out.println("Execution time" + executionTime);
+            System.out.println("Execution time: " + executionTime);
             createIndex();
             startTime = System.nanoTime();
             employeeService.findByGenderAndNamePrefix();
             endTime = System.nanoTime();
             executionTime = (endTime - startTime) / 1_000_000;
-            System.out.println("Execution time after indexing" + executionTime);
+            System.out.println("Execution time after indexing: " + executionTime);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -89,8 +90,7 @@ public class EmployeeController {
     public void createIndex(){
         try {
             employeeService.Indexing();
-            System.out.println("Employee indexed");
-            findByGenderAndNamePrefix();
+            System.out.println("Employee indexed!!!");
         }
         catch (Exception e){
             e.printStackTrace();

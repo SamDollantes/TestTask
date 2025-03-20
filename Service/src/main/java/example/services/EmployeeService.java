@@ -17,7 +17,6 @@ public class EmployeeService {
 
     public void createTable(){
         try {
-            employeeDAO.createDatabase();
             employeeDAO.createTable();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -60,7 +59,7 @@ public class EmployeeService {
     }
 
     public void generateEmployees() {
-        if (!employeeDAO.isTableExists()) {
+        if (!EmployeeDAO.isTableExists()) {
             throw new RuntimeException("Employee table does not exist");
         }
 
@@ -143,54 +142,50 @@ public class EmployeeService {
                 "Fominykh", "Fedulova", "Fetisova", "Fokinova", "Firsova", "Fominovich", "Filippova", "Felixova", "Fomchenkova", "Fandorina"
         };
 
-
-
-
-
-        for (int i = 0; 1000000 >= i; ++i){
-            if(i%2==0){
                 Gender gender = Gender.Male;
                 for (String firstName : maleFirstNames) {
                     for (String middleName : maleMiddleNames) {
                         for (String lastName : maleLastNames) {
                             LocalDate birthDate = LocalDate.of(1950 + random.nextInt(50), random.nextInt(12) + 1, random.nextInt(28) + 1);
                             employees.add(new Employee(firstName, lastName, middleName, birthDate, gender));
-                            if (employees.size() >= 1000000) break;
+                            System.out.println("male: " + employees.size());
+                            if (employees.size() >= 500000) break;
                         }
-                        if (employees.size() >= 1000000) break;
+                        if (employees.size() >= 500000) break;
                     }
-                    if (employees.size() >= 1000000) break;
+                    if (employees.size() >= 500000) break;
                 }
-            }
-            else{
-                Gender gender = Gender.Female;
+
+                gender = Gender.Female;
                 for (String firstName : femaleFirstNames) {
                     for (String middleName : femaleMiddleNames) {
                         for (String lastName : femaleLastNames) {
                             LocalDate birthDate = LocalDate.of(1950 + random.nextInt(50), random.nextInt(12) + 1, random.nextInt(28) + 1);
                             employees.add(new Employee(firstName, lastName, middleName, birthDate, gender));
+                            System.out.println("female: " + employees.size());
                             if (employees.size() >= 1000000) break;
                         }
                         if (employees.size() >= 1000000) break;
                     }
                     if (employees.size() >= 1000000) break;
                 }
-            }
-        }
 
-        for (int i = 0; 100 >= i; ++i){
+
+        int index = 0;
             for (String firstName : maleFirstNames) {
                 for (String middleName : maleMiddleNames) {
                     for (String lastName : maleLastNamesF) {
                         LocalDate birthDate = LocalDate.of(1950 + random.nextInt(50), random.nextInt(12) + 1, random.nextInt(28) + 1);
-                        employees.add(new Employee(firstName, lastName, middleName, birthDate, Gender.Male));
-                        if (employees.size() >= 1000000) break;
+                        Employee employee = new Employee(firstName, lastName, middleName, birthDate, Gender.Male);
+                        employees.add(employee);
+                        System.out.println(employee.toString());
+                        index++;
+                        if (index >= 100) break;
                     }
-                    if (employees.size() >= 1000000) break;
+                    if (index >= 100) break;
                 }
-                if (employees.size() >= 1000000) break;
+                if (index >= 100) break;
             }
-        }
 
         try {
             employeeDAO.batchInsert(employees);

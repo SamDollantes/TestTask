@@ -1,5 +1,8 @@
+import example.dao.DBUtill;
+
 public class ConsoleUI {
     public static void main(String[] args) {
+        DBUtill.createDatabase();
         EmployeeController controller = new EmployeeController();
 
         if (args.length < 1) {
